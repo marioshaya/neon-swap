@@ -11,7 +11,7 @@ const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 	const [isDropdown, setIsDropdown] = useState(false)
 
 	const getAccount = (address: string) => {
-		if (address === "0x17402D4689926A9CCc2f1e5E4E4eD3F7c4076663") {
+		if (address === "0x17402d4689926a9ccc2f1e5e4e4ed3f7c4076663") {
 			return "FatGirl"
 		} else if (address === "0x94510b9f79c5d8af286bbf2e7880c7799588d19b") {
 			return "SlimGirl"
