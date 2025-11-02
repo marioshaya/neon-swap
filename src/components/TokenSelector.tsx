@@ -5,6 +5,7 @@ import { FaCircleNotch } from "react-icons/fa6"
 import { useBalance } from "@/hooks"
 import { neonTokens } from "@/tokens"
 import type { TokenSelectorProps } from "@/types"
+import { formatBalance } from "@/utils"
 
 const TokenSelector = ({
 	connectedWallet,
@@ -43,10 +44,10 @@ const TokenSelector = ({
 									) : balance ? (
 										<span>
 											{tkn.name === "NEON"
-												? Number(balance.neon).toFixed(4)
+												? formatBalance(balance.neon)
 												: tkn.name === "USDC"
-													? Number(balance.usdc).toFixed(4)
-													: Number(balance.usdt).toFixed(4)}
+													? formatBalance(balance.usdc)
+													: formatBalance(balance.usdt)}
 										</span>
 									) : (
 										<span>{error}</span>
