@@ -13,7 +13,7 @@ const TokenSelector = ({
 	onSelect,
 	onClose,
 }: TokenSelectorProps) => {
-	const { balance, loading } = useBalance(connectedWallet)
+	const { balance, loading, error } = useBalance(connectedWallet)
 
 	return (
 		<div className="absolute top-0 left-0 flex flex-col items-center justify-center p-4 backdrop-blur-lg h-screen w-full bg-cyan-700/5">
@@ -46,14 +46,16 @@ const TokenSelector = ({
 										<span className="animate-spin">
 											<FaCircleNotch />
 										</span>
-									) : (
+									) : balance ? (
 										<span>
 											{tkn.name === "NEON"
-												? balance.neon
+												? Number(balance.neon).toFixed(4)
 												: tkn.name === "USDC"
-													? balance.usdc
-													: balance.usdt}
+													? Number(balance.usdc).toFixed(4)
+													: Number(balance.usdt).toFixed(4)}
 										</span>
+									) : (
+										<span>{error}</span>
 									)
 								) : (
 									0

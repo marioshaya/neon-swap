@@ -36,9 +36,9 @@ export const useBalance = (addr: string) => {
 				])
 
 				setBalance({
-					neon: neonData,
-					usdc: usdcData,
-					usdt: usdtData,
+					neon: neonData.formattedBalance,
+					usdc: usdcData.formattedBalance,
+					usdt: usdtData.formattedBalance,
 				})
 			} catch (err) {
 				setError("Failed to fetch balances from Balance Fetcher API")
