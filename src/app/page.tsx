@@ -5,7 +5,7 @@ export default function Home() {
 	return (
 		<div className="flex items-center bg-gray-200 justify-center gap-y-2 flex-col min-h-screen">
 			<div className="font-semibold text-cyan-600 text-2xl">Neon Swap</div>
-			<div className="min-h-96 bg-white border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4 w-4/5">
+			<div className=" bg-white border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4 w-4/5">
 				<div className="space-y-4">
 					<div className="flex items-center gap-x-4">
 						<input
@@ -13,7 +13,7 @@ export default function Home() {
 							type="number"
 						/>
 						<button
-							className="flex px-2 py-1 rounded-lg items-center bg-cyan-600 text-white/95 font-bold gap-x-1"
+							className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-600 text-white/95 font-bold gap-x-1"
 							type="button"
 						>
 							<div>NEON</div>
@@ -33,7 +33,7 @@ export default function Home() {
 							type="number"
 						/>
 						<button
-							className="flex px-2 py-1 rounded-lg items-center bg-cyan-600 text-white/95 font-bold gap-x-1"
+							className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-700 text-white/95 font-bold gap-x-1"
 							type="button"
 						>
 							<div>USDC</div>
