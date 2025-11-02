@@ -29,7 +29,7 @@ const TokenSelector = ({
 				<div className="flex flex-col bg-cyan-900">
 					{neonTokens.map((tkn) => (
 						<button
-							className="flex items-center justify-between px-4 py-2 hover:bg-cyan-800 ease-in-out transition-all duration-300"
+							className="flex items-center justify-between px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-cyan-800 ease-in-out transition-all duration-300"
 							disabled={tkn.name === disabled}
 							onClick={() => onSelect(tkn.name)}
 							key={tkn.contractAddress}
