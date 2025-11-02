@@ -33,12 +33,12 @@ const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 				<SlWallet className="text-xl" />
 			</button>
 			{isDropdown && (
-				<div className="flex flex-col items-center w-42 absolute top-12 right-0 bg-white dark:bg-black/50 backdrop-blur-2xl p-2 rounded-xl">
+				<div className="flex flex-col gap-y-2 items-center w-42 absolute top-12 right-0 bg-white dark:bg-cyan-800/5 backdrop-blur-lg p-2 rounded-xl shadow ">
 					<div className="">
 						{connectedAccount && getAccount(connectedAccount)}
 					</div>
 					<button
-						className="w-full border rounded-lg text-cyan-600 border-cyan-600 px-2 py-1"
+						className="w-full border rounded-lg text-cyan-600 border-cyan-600 px-2 py-1 hover:bg-cyan-800 hover:text-white duration-300 transition-all ease-in-out"
 						type="button"
 						onClick={onClick}
 					>
