@@ -9,7 +9,6 @@ const TokenSelector = ({ isInput, onSelect, onClose }: TokenSelectorProps) => {
 			<div className="bg-cyan-700 p-4 w-4/5 rounded-3xl">
 				<div className="flex items-center justify-between">
 					<div className="text-lg font-bold">
-						{" "}
 						{isInput ? "Input" : "Output"} Token Selector
 					</div>
 					<button type="button" onClick={onClose}>
