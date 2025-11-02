@@ -157,7 +157,7 @@ export default function Home() {
 				<div className="w-full flex items-center justify-center flex-col bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4">
 					<div className="w-full flex items-center gap-x-4">
 						<input
-							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1"
+							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1 dark:bg-gray-200/15"
 							type="number"
 						/>
 						<button
@@ -178,7 +178,7 @@ export default function Home() {
 					</div>
 					<div className="w-full flex items-center gap-x-4">
 						<input
-							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1"
+							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1 dark:bg-gray-200/15"
 							type="number"
 						/>
 						<button
