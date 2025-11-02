@@ -13,7 +13,7 @@ const TokenSelector = ({ isInput, onSelect, onClose }: TokenSelectorProps) => {
 						{isInput ? "Input" : "Output"} Token Selector
 					</div>
 					<button type="button" onClick={onClose}>
-						<FaTimes className="text-2xl hover:bg-red-700/75" />
+						<FaTimes className="text-2xl hover:text-red-400/75 transition-colors duration-300 ease-in-out" />
 					</button>
 				</div>
 				<div className="flex flex-col gap-4">
