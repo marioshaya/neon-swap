@@ -17,8 +17,8 @@ const TokenSelector = ({
 
 	return (
 		<div className="absolute top-0 left-0 flex flex-col items-center justify-center p-4 backdrop-blur-lg h-screen w-full bg-cyan-700/5">
-			<div className="bg-cyan-700 p-4 w-4/5 rounded-3xl">
-				<div className="flex items-center justify-between">
+			<div className="bg-cyan-700 w-4/5 rounded-3xl overflow-hidden">
+				<div className="flex items-center justify-between p-4">
 					<div className="text-lg font-bold">
 						{isInput ? "Input" : "Output"} Token Selector
 					</div>
@@ -26,20 +26,15 @@ const TokenSelector = ({
 						<FaTimes className="text-2xl hover:text-red-400/75 transition-colors duration-300 ease-in-out" />
 					</button>
 				</div>
-				<div className="flex flex-col gap-4">
+				<div className="flex flex-col bg-cyan-900">
 					{neonTokens.map((tkn) => (
 						<button
-							className="border-b flex items-center justify-between"
+							className="flex items-center justify-between px-4 py-2 hover:bg-cyan-800 ease-in-out transition-all duration-300"
 							onClick={() => onSelect(tkn.name)}
 							key={tkn.contractAddress}
 							type="button"
 						>
-							<div>
-								<div>{tkn.name}</div>
-								<div className="text-white/55">
-									{formatAddress(tkn.contractAddress)}
-								</div>
-							</div>
+							<div>{tkn.name}</div>
 							<div>
 								{connectedWallet ? (
 									loading ? (
