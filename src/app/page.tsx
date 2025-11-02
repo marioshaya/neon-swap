@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react"
 import { CgArrowsExchangeAltV } from "react-icons/cg"
 import { FaAngleDown } from "react-icons/fa6"
 import ConnectWallet from "@/components/ConnectWallet"
-import type { TxState } from "@/types"
+import InputTokenSelector from "@/components/InputTokenSelector"
+import type { SelectTokensState, TxState } from "@/types"
 
 export default function Home() {
 	const [status, setStatus] = useState<TxState>("pending")
@@ -12,6 +13,14 @@ export default function Home() {
 	const [statusMessage, setStatusMessage] = useState<string | undefined>()
 	const [txHash, setTxHash] = useState<string | null>(null)
 	const [connectedAccount, setConnectedAccount] = useState<string | null>(null)
+
+	// Modals
+	const [isInputTokenSelectorOpen, setIsInputTokenSelectorOpen] =
+		useState(false)
+
+	// Input & Output Tokens
+	const [selectedInputToken, setSelectedInputToken] =
+		useState<SelectTokensState>("NEON")
 
 	const openStatus = (s: typeof status, msg?: string, hash?: string | null) => {
 		setStatus(s)
@@ -114,6 +123,14 @@ export default function Home() {
 		}
 	}, [])
 
+	const handleInputTokenSelectorModal = () => {
+		setIsInputTokenSelectorOpen(true)
+	}
+	const handleInputTokenSelect = (token: SelectTokensState) => {
+		setIsInputTokenSelectorOpen(false)
+		setSelectedInputToken(token)
+	}
+
 	return (
 		<main className="bg-gray-200 dark:bg-gray-800 px-4 py-2 min-h-screen">
 			<div className="flex items-center justify-between">
@@ -133,9 +150,10 @@ export default function Home() {
 							/>
 							<button
 								className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-600 text-white/95 font-bold gap-x-1"
+								onClick={handleInputTokenSelectorModal}
 								type="button"
 							>
-								<div>NEON</div>
+								<div>{selectedInputToken}</div>
 								<div className="w-full h-full ">
 									<FaAngleDown className="text-xl" />
 								</div>
@@ -164,6 +182,12 @@ export default function Home() {
 					</div>
 				</div>
 			</div>
+			{isInputTokenSelectorOpen && (
+				<InputTokenSelector
+					onClose={() => setIsInputTokenSelectorOpen(false)}
+					onSelect={handleInputTokenSelect}
+				/>
+			)}
 		</main>
 	)
 }
