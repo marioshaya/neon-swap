@@ -22,7 +22,7 @@ const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 	return (
 		<div className="relative w-10">
 			<button
-				className={`flex items-center justify-center gap-x-2 font-bold border w-full p-2 rounded-lg transition-colors hover:cursor-pointer ${
+				className={`flex items-center justify-center gap-x-2 font-bold border w-full p-2 rounded-lg transition-colors ${
 					connectedAccount
 						? "text-cyan-600 bg-white dark:bg-black/20 border-cyan-600 hover:bg-cyan-50"
 						: "text-white bg-cyan-600 border-cyan-600 hover:bg-cyan-700"
