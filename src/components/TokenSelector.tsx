@@ -3,12 +3,15 @@ import { neonTokens } from "@/tokens"
 import type { TokenSelectorProps } from "@/types"
 import { formatAddress } from "@/utils"
 
-const InputTokenSelector = ({ onSelect, onClose }: TokenSelectorProps) => {
+const TokenSelector = ({ isInput, onSelect, onClose }: TokenSelectorProps) => {
 	return (
 		<div className="absolute top-0 left-0 flex flex-col items-center justify-center p-4 backdrop-blur-lg h-screen w-full bg-cyan-700/5">
 			<div className="bg-cyan-700 p-4 w-4/5 rounded-3xl">
 				<div className="flex items-center justify-between">
-					<div className="text-lg font-bold">Input Token Selector</div>
+					<div className="text-lg font-bold">
+						{" "}
+						{isInput ? "Input" : "Output"} Token Selector
+					</div>
 					<button type="button" onClick={onClose}>
 						<FaTimes className="text-2xl hover:bg-red-700/75" />
 					</button>
@@ -36,4 +39,4 @@ const InputTokenSelector = ({ onSelect, onClose }: TokenSelectorProps) => {
 	)
 }
 
-export default InputTokenSelector
+export default TokenSelector

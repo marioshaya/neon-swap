@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { CgArrowsExchangeAltV } from "react-icons/cg"
 import { FaAngleDown } from "react-icons/fa6"
 import ConnectWallet from "@/components/ConnectWallet"
-import InputTokenSelector from "@/components/InputTokenSelector"
+import TokenSelector from "@/components/TokenSelector"
 import type { SelectTokensState, TxState } from "@/types"
 
 export default function Home() {
@@ -17,10 +17,14 @@ export default function Home() {
 	// Modals
 	const [isInputTokenSelectorOpen, setIsInputTokenSelectorOpen] =
 		useState(false)
+	const [isOutputTokenSelectorOpen, setIsOutputTokenSelectorOpen] =
+		useState(false)
 
 	// Input & Output Tokens
 	const [selectedInputToken, setSelectedInputToken] =
 		useState<SelectTokensState>("NEON")
+	const [selectedOutputToken, setSelectedOutputToken] =
+		useState<SelectTokensState>("USDC")
 
 	const openStatus = (s: typeof status, msg?: string, hash?: string | null) => {
 		setStatus(s)
@@ -126,9 +130,17 @@ export default function Home() {
 	const handleInputTokenSelectorModal = () => {
 		setIsInputTokenSelectorOpen(true)
 	}
+	const handleOutputTokenSelectorModal = () => {
+		setIsOutputTokenSelectorOpen(true)
+	}
+
 	const handleInputTokenSelect = (token: SelectTokensState) => {
 		setIsInputTokenSelectorOpen(false)
 		setSelectedInputToken(token)
+	}
+	const handleOutputTokenSelect = (token: SelectTokensState) => {
+		setIsOutputTokenSelectorOpen(false)
+		setSelectedOutputToken(token)
 	}
 
 	return (
@@ -171,9 +183,10 @@ export default function Home() {
 							/>
 							<button
 								className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-700 text-white/95 font-bold gap-x-1"
+								onClick={handleOutputTokenSelectorModal}
 								type="button"
 							>
-								<div>USDC</div>
+								<div>{selectedOutputToken}</div>
 								<div className="w-full h-full ">
 									<FaAngleDown className="text-xl" />
 								</div>
@@ -183,9 +196,16 @@ export default function Home() {
 				</div>
 			</div>
 			{isInputTokenSelectorOpen && (
-				<InputTokenSelector
+				<TokenSelector
+					isInput
 					onClose={() => setIsInputTokenSelectorOpen(false)}
 					onSelect={handleInputTokenSelect}
+				/>
+			)}
+			{isOutputTokenSelectorOpen && (
+				<TokenSelector
+					onClose={() => setIsOutputTokenSelectorOpen(false)}
+					onSelect={handleOutputTokenSelect}
 				/>
 			)}
 		</main>
