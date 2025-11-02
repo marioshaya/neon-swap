@@ -115,7 +115,7 @@ export default function Home() {
 	}, [])
 
 	return (
-		<main className="bg-gray-200 px-4 py-2">
+		<main className="bg-gray-200 dark:bg-gray-800 px-4 py-2 min-h-screen">
 			<div className="flex items-center justify-between">
 				<div className="font-semibold text-cyan-600 text-2xl">Neon Swap</div>
 				<ConnectWallet
@@ -123,8 +123,8 @@ export default function Home() {
 					onClick={handleWalletConnect}
 				/>
 			</div>
-			<div className="flex items-center  justify-center gap-y-2 flex-col min-h-screen">
-				<div className=" bg-white border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4 w-4/5">
+			<div className="flex items-center justify-center gap-y-2 flex-col">
+				<div className=" bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4 w-4/5">
 					<div className="space-y-4">
 						<div className="flex items-center gap-x-4">
 							<input

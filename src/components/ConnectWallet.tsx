@@ -24,7 +24,7 @@ const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 			<button
 				className={`flex items-center justify-center gap-x-2 font-bold border w-full p-2 rounded-lg transition-colors hover:cursor-pointer ${
 					connectedAccount
-						? "text-cyan-600 bg-white border-cyan-600 hover:bg-cyan-50"
+						? "text-cyan-600 bg-white dark:bg-black/20 border-cyan-600 hover:bg-cyan-50"
 						: "text-white bg-cyan-600 border-cyan-600 hover:bg-cyan-700"
 				}`}
 				type="button"
@@ -33,16 +33,16 @@ const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 				<SlWallet className="text-xl" />
 			</button>
 			{isDropdown && (
-				<div className="flex flex-col items-center w-42 absolute top-12 right-0 bg-white p-2 rounded-xl">
+				<div className="flex flex-col items-center w-42 absolute top-12 right-0 bg-white dark:bg-black/50 backdrop-blur-2xl p-2 rounded-xl">
 					<div className="">
 						{connectedAccount && getAccount(connectedAccount)}
 					</div>
 					<button
-						className="w-fit border rounded-lg text-cyan-600 border-cyan-600 px-2 py-1"
+						className="w-full border rounded-lg text-cyan-600 border-cyan-600 px-2 py-1"
 						type="button"
 						onClick={onClick}
 					>
-						{connectedAccount ? "Disconnect" : "Connect"} Wallet
+						{connectedAccount ? "Disconnect" : "Connect"}
 					</button>
 				</div>
 			)}
