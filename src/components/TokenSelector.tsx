@@ -43,9 +43,7 @@ const TokenSelector = ({
 							<div>
 								{connectedWallet ? (
 									loading ? (
-										<span className="animate-spin">
-											<FaCircleNotch />
-										</span>
+										<FaCircleNotch className="animate-spin" />
 									) : balance ? (
 										<span>
 											{tkn.name === "NEON"
