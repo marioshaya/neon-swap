@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 import { CgArrowsExchangeAltV } from "react-icons/cg"
 import { FaAngleDown } from "react-icons/fa6"
@@ -192,9 +193,27 @@ export default function Home() {
 								</div>
 							</button>
 						</div>
+						<button
+							className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg"
+							disabled={!connectedAccount}
+							type="button"
+						>
+							Swap
+						</button>
 					</div>
 				</div>
 			</div>
+			{statusOpen && (
+				<div className="">
+					{statusMessage && <div>{statusMessage}</div>}
+					<Link
+						href={`https://neon.blockscout.com/tx/${txHash}?tab=token_transfers`}
+					>
+						{txHash}
+					</Link>
+				</div>
+			)}
+
 			{isInputTokenSelectorOpen && (
 				<TokenSelector
 					isInput
