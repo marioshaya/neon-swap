@@ -1,9 +1,20 @@
+"use client"
+
 import { FaTimes } from "react-icons/fa"
+import { FaCircleNotch } from "react-icons/fa6"
+import { useBalance } from "@/hooks"
 import { neonTokens } from "@/tokens"
 import type { TokenSelectorProps } from "@/types"
 import { formatAddress } from "@/utils"
 
-const TokenSelector = ({ isInput, onSelect, onClose }: TokenSelectorProps) => {
+const TokenSelector = ({
+	connectedWallet,
+	isInput,
+	onSelect,
+	onClose,
+}: TokenSelectorProps) => {
+	const { balance, loading } = useBalance(connectedWallet)
+
 	return (
 		<div className="absolute top-0 left-0 flex flex-col items-center justify-center p-4 backdrop-blur-lg h-screen w-full bg-cyan-700/5">
 			<div className="bg-cyan-700 p-4 w-4/5 rounded-3xl">
@@ -29,7 +40,25 @@ const TokenSelector = ({ isInput, onSelect, onClose }: TokenSelectorProps) => {
 									{formatAddress(tkn.contractAddress)}
 								</div>
 							</div>
-							<div>120</div>
+							<div>
+								{connectedWallet ? (
+									loading ? (
+										<span className="animate-spin">
+											<FaCircleNotch />
+										</span>
+									) : (
+										<span>
+											{tkn.name === "NEON"
+												? balance.neon
+												: tkn.name === "USDC"
+													? balance.usdc
+													: balance.usdt}
+										</span>
+									)
+								) : (
+									0
+								)}
+							</div>
 						</button>
 					))}
 				</div>

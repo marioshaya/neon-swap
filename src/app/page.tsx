@@ -210,15 +210,17 @@ export default function Home() {
 						</Link>
 					</div>
 				)}
-				{isInputTokenSelectorOpen && (
+				{isInputTokenSelectorOpen && connectedAccount && (
 					<TokenSelector
+						connectedWallet={connectedAccount}
 						isInput
 						onClose={() => setIsInputTokenSelectorOpen(false)}
 						onSelect={handleInputTokenSelect}
 					/>
 				)}
-				{isOutputTokenSelectorOpen && (
+				{isOutputTokenSelectorOpen && connectedAccount && (
 					<TokenSelector
+						connectedWallet={connectedAccount}
 						onClose={() => setIsOutputTokenSelectorOpen(false)}
 						onSelect={handleOutputTokenSelect}
 					/>
