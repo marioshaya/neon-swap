@@ -145,88 +145,85 @@ export default function Home() {
 	}
 
 	return (
-		<main className="bg-gray-200 dark:bg-gray-800 px-4 py-2 min-h-screen">
-			<div className="flex items-center justify-between">
-				<div className="font-semibold text-cyan-600 text-2xl">Neon Swap</div>
-				<ConnectWallet
-					connectedAccount={connectedAccount}
-					onClick={handleWalletConnect}
-				/>
-			</div>
-			<div className="flex items-center justify-center gap-y-2 flex-col">
-				<div className=" bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4 w-4/5">
-					<div className="space-y-4">
-						<div className="flex items-center gap-x-4">
-							<input
-								className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1"
-								type="number"
-							/>
-							<button
-								className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-600 text-white/95 font-bold gap-x-1"
-								onClick={handleInputTokenSelectorModal}
-								type="button"
-							>
-								<div>{selectedInputToken}</div>
-								<div className="w-full h-full ">
-									<FaAngleDown className="text-xl" />
-								</div>
-							</button>
-						</div>
-						<div className="w-full flex justify-center">
-							<button type="button" className="text-cyan-500 text-2xl">
-								<CgArrowsExchangeAltV />
-							</button>
-						</div>
-						<div className="flex items-center gap-x-4">
-							<input
-								className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1"
-								type="number"
-							/>
-							<button
-								className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-700 text-white/95 font-bold gap-x-1"
-								onClick={handleOutputTokenSelectorModal}
-								type="button"
-							>
-								<div>{selectedOutputToken}</div>
-								<div className="w-full h-full ">
-									<FaAngleDown className="text-xl" />
-								</div>
-							</button>
-						</div>
+		<main className="bg-gray-200 dark:bg-gray-800 px-4 py-4 min-h-screen">
+			<div className="mx-auto max-w-[90%] space-y-4 lg:max-w-7xl">
+				<div className="flex items-center justify-between">
+					<div className="font-semibold text-cyan-600 text-2xl">Neon Swap</div>
+					<ConnectWallet
+						connectedAccount={connectedAccount}
+						onClick={handleWalletConnect}
+					/>
+				</div>
+				<div className="w-full flex items-center justify-center flex-col bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4">
+					<div className="w-full flex items-center gap-x-4">
+						<input
+							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1"
+							type="number"
+						/>
 						<button
-							className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg"
-							disabled={!connectedAccount}
+							className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-600 text-white/95 font-bold gap-x-1"
+							onClick={handleInputTokenSelectorModal}
 							type="button"
 						>
-							Swap
+							<div>{selectedInputToken}</div>
+							<div className="w-full h-full ">
+								<FaAngleDown className="text-xl" />
+							</div>
 						</button>
 					</div>
-				</div>
-			</div>
-			{statusOpen && (
-				<div className="">
-					{statusMessage && <div>{statusMessage}</div>}
-					<Link
-						href={`https://neon.blockscout.com/tx/${txHash}?tab=token_transfers`}
+					<div className="w-full flex justify-center py-2">
+						<button type="button" className="text-cyan-500 text-2xl">
+							<CgArrowsExchangeAltV />
+						</button>
+					</div>
+					<div className="w-full flex items-center gap-x-4">
+						<input
+							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1"
+							type="number"
+						/>
+						<button
+							className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-700 text-white/95 font-bold gap-x-1"
+							onClick={handleOutputTokenSelectorModal}
+							type="button"
+						>
+							<div>{selectedOutputToken}</div>
+							<div className="w-full h-full ">
+								<FaAngleDown className="text-xl" />
+							</div>
+						</button>
+					</div>
+					<button
+						className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
+						disabled={!connectedAccount}
+						type="button"
 					>
-						{txHash}
-					</Link>
+						Swap
+					</button>
 				</div>
-			)}
-
-			{isInputTokenSelectorOpen && (
-				<TokenSelector
-					isInput
-					onClose={() => setIsInputTokenSelectorOpen(false)}
-					onSelect={handleInputTokenSelect}
-				/>
-			)}
-			{isOutputTokenSelectorOpen && (
-				<TokenSelector
-					onClose={() => setIsOutputTokenSelectorOpen(false)}
-					onSelect={handleOutputTokenSelect}
-				/>
-			)}
+				{statusOpen && (
+					<div className="">
+						{statusMessage && <div>{statusMessage}</div>}
+						<Link
+							href={`https://neon.blockscout.com/tx/${txHash}?tab=token_transfers`}
+						>
+							{txHash}
+						</Link>
+					</div>
+				)}
+				{isInputTokenSelectorOpen && (
+					<TokenSelector
+						isInput
+						onClose={() => setIsInputTokenSelectorOpen(false)}
+						onSelect={handleInputTokenSelect}
+					/>
+				)}
+				{isOutputTokenSelectorOpen && (
+					<TokenSelector
+						onClose={() => setIsOutputTokenSelectorOpen(false)}
+						onSelect={handleOutputTokenSelect}
+					/>
+				)}
+			</div>
 		</main>
 	)
 }
