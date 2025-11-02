@@ -213,6 +213,7 @@ export default function Home() {
 				{isInputTokenSelectorOpen && connectedAccount && (
 					<TokenSelector
 						connectedWallet={connectedAccount}
+						disabled={selectedOutputToken}
 						isInput
 						onClose={() => setIsInputTokenSelectorOpen(false)}
 						onSelect={handleInputTokenSelect}
@@ -221,6 +222,7 @@ export default function Home() {
 				{isOutputTokenSelectorOpen && connectedAccount && (
 					<TokenSelector
 						connectedWallet={connectedAccount}
+						disabled={selectedInputToken}
 						onClose={() => setIsOutputTokenSelectorOpen(false)}
 						onSelect={handleOutputTokenSelect}
 					/>
