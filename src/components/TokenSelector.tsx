@@ -5,7 +5,6 @@ import { FaCircleNotch } from "react-icons/fa6"
 import { useBalance } from "@/hooks"
 import { neonTokens } from "@/tokens"
 import type { TokenSelectorProps } from "@/types"
-import { formatAddress } from "@/utils"
 
 const TokenSelector = ({
 	connectedWallet,
