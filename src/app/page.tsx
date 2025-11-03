@@ -295,7 +295,6 @@ export default function Home() {
 							!inputAmount ||
 							!outputAmount ||
 							!isBalanceSufficient
-							// getTokenBalance(selectedInputToken) < Number(inputAmount)
 						}
 						type="button"
 					>
