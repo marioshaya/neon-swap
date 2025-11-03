@@ -36,7 +36,10 @@ const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 					<button
 						className="w-full border rounded-lg text-cyan-600 border-cyan-600 px-2 py-1 hover:bg-cyan-800 hover:text-white duration-300 transition-all ease-in-out"
 						type="button"
-						onClick={onClick}
+						onClick={() => {
+							setIsDropdown(false)
+							onClick()
+						}}
 					>
 						{connectedAccount ? "Disconnect" : "Connect"}
 					</button>
