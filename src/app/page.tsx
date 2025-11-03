@@ -33,6 +33,7 @@ export default function Home() {
 	// Amounts
 	const [inputAmount, setInputAmount] = useState<string>("")
 	const [outputAmount, setOutputAmount] = useState<string>("")
+	const [lastEdited, setLastEdited] = useState<"input" | "output" | null>(null)
 	const { rpcUrl } = useRpc()
 	const swapService = useMemo(() => new SwapService(rpcUrl), [rpcUrl])
 
@@ -178,15 +179,48 @@ export default function Home() {
 			if (cancelled) return
 			setOutputAmount(quote?.amountOutFormatted ?? "")
 		}
-		if (inputAmount && Number(inputAmount) > 0) {
+		if (lastEdited === "input" && inputAmount && Number(inputAmount) > 0) {
 			fetchQuote().catch(() => {})
 		} else {
-			setOutputAmount("")
+			if (lastEdited === "input") setOutputAmount("")
 		}
 		return () => {
 			cancelled = true
 		}
-	}, [inputAmount, selectedInputToken, selectedOutputToken, swapService])
+	}, [
+		inputAmount,
+		selectedInputToken,
+		selectedOutputToken,
+		swapService,
+		lastEdited,
+	])
+
+	useEffect(() => {
+		let cancelled = false
+		async function fetchReverseQuote() {
+			const quote = await swapService.getQuoteForOutput({
+				inputSymbol: selectedInputToken,
+				outputSymbol: selectedOutputToken,
+				amountOut: outputAmount || "0",
+			})
+			if (cancelled) return
+			setInputAmount(quote?.amountInFormatted ?? "")
+		}
+		if (lastEdited === "output" && outputAmount && Number(outputAmount) > 0) {
+			fetchReverseQuote().catch(() => {})
+		} else {
+			if (lastEdited === "output") setInputAmount("")
+		}
+		return () => {
+			cancelled = true
+		}
+	}, [
+		outputAmount,
+		selectedInputToken,
+		selectedOutputToken,
+		swapService,
+		lastEdited,
+	])
 
 	return (
 		<main className="bg-gray-200 dark:bg-gray-800 px-4 py-4 min-h-screen">
@@ -205,7 +239,10 @@ export default function Home() {
 					<TokenField
 						amount={inputAmount}
 						connectedAccount={connectedAccount}
-						onChange={(e) => setInputAmount(e.target.value)}
+						onChange={(e) => {
+							setLastEdited("input")
+							setInputAmount(e.target.value)
+						}}
 						onClick={handleInputTokenSelectorModal}
 						token={selectedInputToken}
 					/>
@@ -221,6 +258,10 @@ export default function Home() {
 					<TokenField
 						amount={outputAmount}
 						connectedAccount={connectedAccount}
+						onChange={(e) => {
+							setLastEdited("output")
+							setOutputAmount(e.target.value)
+						}}
 						onClick={handleOutputTokenSelectorModal}
 						isOutput
 						token={selectedOutputToken}

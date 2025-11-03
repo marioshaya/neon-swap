@@ -5,6 +5,7 @@ import type { SelectTokensState } from "@/types"
 
 const V2_ROUTER_ABI = [
 	"function getAmountsOut(uint256 amountIn, address[] calldata path) external view returns (uint256[] memory amounts)",
+	"function getAmountsIn(uint256 amountOut, address[] calldata path) external view returns (uint256[] memory amounts)",
 ]
 
 const ERC20_READ_ABI = ["function decimals() view returns (uint8)"]
@@ -79,6 +80,39 @@ export class SwapService {
 			return { amountOutFormatted, amountOut }
 		} catch (error) {
 			console.error("Quote error:", error)
+			return null
+		}
+	}
+
+	async getQuoteForOutput(params: {
+		inputSymbol: SelectTokensState
+		outputSymbol: SelectTokensState
+		amountOut: string
+	}): Promise<{ amountInFormatted: string; amountIn: bigint } | null> {
+		const { inputSymbol, outputSymbol, amountOut } = params
+
+		try {
+			if (!amountOut || Number(amountOut) <= 0) return null
+
+			const [input, output] = await Promise.all([
+				this.resolveToken(inputSymbol),
+				this.resolveToken(outputSymbol),
+			])
+
+			const amountOutWei = ethers.parseUnits(amountOut, output.decimals)
+
+			const path: string[] = [input.address, output.address]
+
+			const amounts: bigint[] = await this.router.getAmountsIn(
+				amountOutWei,
+				path,
+			)
+			const amountIn = amounts[0]
+			const amountInFormatted = ethers.formatUnits(amountIn, input.decimals)
+
+			return { amountInFormatted, amountIn }
+		} catch (error) {
+			console.error("Reverse quote error:", error)
 			return null
 		}
 	}

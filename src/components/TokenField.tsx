@@ -23,7 +23,6 @@ const TokenField = ({
 	const { balance, loading, error } = useBalance(connectedAccount ?? "")
 
 	const handleInput: React.FormEventHandler<HTMLInputElement> = (e) => {
-		if (isOutput) return
 		const inputEl = e.currentTarget
 		const raw = inputEl.value
 		// Allow only digits and a single optional dot
@@ -76,7 +75,6 @@ const TokenField = ({
 				value={amount}
 				onInput={handleInput}
 				placeholder="0.00"
-				readOnly={isOutput}
 			/>
 		</div>
 	)
