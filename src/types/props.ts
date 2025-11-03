@@ -1,5 +1,10 @@
 import type { SelectTokensState } from "./tokens"
 
+export interface ConnectWalletProps {
+	onClick: () => void
+	connectedAccount: string | null
+}
+
 export interface TokenSelectorProps {
 	connectedWallet: string
 	disabled: string

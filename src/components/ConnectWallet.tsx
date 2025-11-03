@@ -1,11 +1,7 @@
 import { useState } from "react"
 import { SlWallet } from "react-icons/sl"
+import type { ConnectWalletProps } from "@/types"
 import { formatAddress } from "@/utils"
-
-interface ConnectWalletProps {
-	onClick: () => void
-	connectedAccount: string | null
-}
 
 const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 	const [isDropdown, setIsDropdown] = useState(false)
