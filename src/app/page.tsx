@@ -39,22 +39,75 @@ export default function Home() {
 	const [outputAmount, setOutputAmount] = useState<string>("")
 	const [lastEdited, setLastEdited] = useState<"input" | "output" | null>(null)
 
+	// Quote loading state
+	const [quoteLoading, setQuoteLoading] = useState(false)
+
 	// Balance
 	const { balance, loading, refetchBalance } = useBalance(
 		connectedAccount ?? "",
 	)
 
-	const handleRefetchBalance = useCallback(() => {
-		if (refetchBalance) {
-			refetchBalance().catch((err) => {
-				console.error("Error refetching balance:", err)
-			})
-		}
-	}, [refetchBalance])
-
 	// Rpc
 	const { rpcUrl } = useRpc()
 	const swapService = useMemo(() => new SwapService(rpcUrl), [rpcUrl])
+
+	const refetchQuote = useCallback(async () => {
+		if (!inputAmount && !outputAmount) return
+
+		setQuoteLoading(true)
+		try {
+			if (lastEdited === "input" && inputAmount && Number(inputAmount) > 0) {
+				const quote = await swapService.getQuote({
+					inputSymbol: selectedInputToken,
+					outputSymbol: selectedOutputToken,
+					amountIn: inputAmount,
+				})
+				setOutputAmount(quote?.amountOutFormatted ?? "")
+			} else if (
+				lastEdited === "output" &&
+				outputAmount &&
+				Number(outputAmount) > 0
+			) {
+				const quote = await swapService.getQuoteForOutput({
+					inputSymbol: selectedInputToken,
+					outputSymbol: selectedOutputToken,
+					amountOut: outputAmount,
+				})
+				setInputAmount(quote?.amountInFormatted ?? "")
+			} else if (inputAmount && Number(inputAmount) > 0) {
+				// Default: refetch forward quote if input amount exists
+				const quote = await swapService.getQuote({
+					inputSymbol: selectedInputToken,
+					outputSymbol: selectedOutputToken,
+					amountIn: inputAmount,
+				})
+				setOutputAmount(quote?.amountOutFormatted ?? "")
+			}
+		} catch (err) {
+			console.error("Error refetching quote:", err)
+		} finally {
+			setQuoteLoading(false)
+		}
+	}, [
+		inputAmount,
+		outputAmount,
+		lastEdited,
+		selectedInputToken,
+		selectedOutputToken,
+		swapService,
+	])
+
+	const handleRefetchBalance = useCallback(async () => {
+		if (refetchBalance) {
+			await refetchBalance().catch((err) => {
+				console.error("Error refetching balance:", err)
+			})
+		}
+		// Refetch quote after balance is refetched
+		await refetchQuote()
+	}, [refetchBalance, refetchQuote])
+
+	const isLoading = loading || quoteLoading
 
 	const getTokenBalance = (tkn: SelectTokensState) => {
 		switch (tkn) {
@@ -339,9 +392,9 @@ export default function Home() {
 								handleRefetchBalance()
 							}}
 							type="button"
-							disabled={!connectedAccount || loading}
+							disabled={!connectedAccount || isLoading}
 						>
-							{loading ? (
+							{isLoading ? (
 								<FaCircleNotch className="animate-spin" />
 							) : (
 								<IoReloadOutline />
@@ -351,7 +404,7 @@ export default function Home() {
 					<TokenField
 						amount={inputAmount}
 						connectedAccount={connectedAccount}
-						loading={loading}
+						loading={isLoading}
 						onChange={(e) => {
 							setLastEdited("input")
 							setInputAmount(e.target.value)
@@ -371,7 +424,7 @@ export default function Home() {
 					<TokenField
 						amount={outputAmount}
 						connectedAccount={connectedAccount}
-						loading={loading}
+						loading={isLoading}
 						onChange={(e) => {
 							setLastEdited("output")
 							setOutputAmount(e.target.value)
