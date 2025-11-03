@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { TbNetwork } from "react-icons/tb"
 import { config } from "@/config"
 import { useRpc } from "@/context/RpcContext"
@@ -6,6 +6,7 @@ import { useRpc } from "@/context/RpcContext"
 const RpcSelector = () => {
 	const [isDropdown, setIsDropdown] = useState(false)
 	const { rpcIndex, setRpcIndex } = useRpc()
+	const dropdownRef = useRef<HTMLDivElement>(null)
 
 	const options = useMemo(
 		() => [
@@ -16,8 +17,27 @@ const RpcSelector = () => {
 		[],
 	)
 
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setIsDropdown(false)
+			}
+		}
+
+		if (isDropdown) {
+			document.addEventListener("mousedown", handleClickOutside)
+		}
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside)
+		}
+	}, [isDropdown])
+
 	return (
-		<div className="relative w-10">
+		<div className="relative w-10" ref={dropdownRef}>
 			<button
 				className="flex items-center justify-center gap-x-2 font-bold border w-full p-2 rounded-lg transition-colors text-cyan-600"
 				onClick={() => setIsDropdown(!isDropdown)}

@@ -1,10 +1,11 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { SlWallet } from "react-icons/sl"
 import type { ConnectWalletProps } from "@/types"
 import { formatAddress } from "@/utils"
 
 const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 	const [isDropdown, setIsDropdown] = useState(false)
+	const dropdownRef = useRef<HTMLDivElement>(null)
 
 	const getAccount = (address: string) => {
 		if (address === "0x17402d4689926a9ccc2f1e5e4e4ed3f7c4076663") {
@@ -15,8 +16,27 @@ const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 		return formatAddress(address)
 	}
 
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setIsDropdown(false)
+			}
+		}
+
+		if (isDropdown) {
+			document.addEventListener("mousedown", handleClickOutside)
+		}
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside)
+		}
+	}, [isDropdown])
+
 	return (
-		<div className="relative w-10">
+		<div className="relative w-10" ref={dropdownRef}>
 			<button
 				className={`flex items-center justify-center gap-x-2 font-bold border w-full p-2 rounded-lg transition-colors ${
 					connectedAccount
