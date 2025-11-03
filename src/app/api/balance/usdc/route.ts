@@ -23,16 +23,30 @@ export async function GET(req: NextRequest) {
 	}
 
 	try {
-		const rpcCookie = cookies().get("rpc_index")?.value
-		const idx = Number(rpcCookie)
-		const rpcUrl =
-			!Number.isNaN(idx) && idx >= 0 && idx < config.rpc.length
-				? config.rpc[idx]
-				: config.rpc[0]
-		const balanceService = new BalanceService(rpcUrl)
-		const result = await balanceService.getUsdcBalance(walletAddress)
+		const cookieStore = await cookies()
+		const rpcCookie = cookieStore.get("rpc_index")?.value
+		const preferredIdx = Number(rpcCookie)
+		const startIdx =
+			!Number.isNaN(preferredIdx) &&
+			preferredIdx >= 0 &&
+			preferredIdx < config.rpc.length
+				? preferredIdx
+				: 0
 
-		return NextResponse.json(result, { status: 200 })
+		let lastError: unknown = null
+		for (let i = 0; i < config.rpc.length; i++) {
+			const idx = (startIdx + i) % config.rpc.length
+			try {
+				const rpcUrl = config.rpc[idx]
+				const service = new BalanceService(rpcUrl)
+				const result = await service.getUsdcBalance(walletAddress)
+				return NextResponse.json(result, { status: 200 })
+			} catch (err) {
+				lastError = err
+			}
+		}
+
+		throw lastError ?? new Error("All RPCs failed")
 	} catch (error) {
 		console.error("Error fetching USDC balance:", error)
 		return NextResponse.json(
