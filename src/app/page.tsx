@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { CgArrowsExchangeAltV } from "react-icons/cg"
+import { FaTimes } from "react-icons/fa"
 import { FaCircleNotch } from "react-icons/fa6"
 import { IoReloadOutline } from "react-icons/io5"
 import ConnectWallet from "@/components/ConnectWallet"
@@ -459,19 +460,20 @@ export default function Home() {
 						</button>
 					)}
 				</div>
-				<div className="">
-					{statusOpen && (
-						<div className="">
-							{statusMessage && <div>{statusMessage}</div>}
-							<Link
-								href={`${config.scanExplorer}/${txHash}?tab=token_transfers`}
-								target="_blank"
-							>
-								{txHash}
-							</Link>
-						</div>
-					)}
-				</div>
+				{statusOpen && (
+					<div className="flex justify-between">
+						{statusMessage && <div>{statusMessage}</div>}
+						<Link
+							href={`${config.scanExplorer}/${txHash}?tab=token_transfers`}
+							target="_blank"
+						>
+							{txHash}
+						</Link>
+						<button onClick={() => setStatusOpen(false)} type="button">
+							<FaTimes />
+						</button>
+					</div>
+				)}
 				{isInputTokenSelectorOpen && connectedAccount && (
 					<TokenSelector
 						connectedWallet={connectedAccount}
