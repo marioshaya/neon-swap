@@ -61,6 +61,72 @@ export class SwapService {
 		return { address: addr, decimals }
 	}
 
+	private async getBestQuoteForPaths(
+		amountInWei: bigint,
+		paths: string[][],
+		outputDecimals: number,
+	): Promise<{ amountOutFormatted: string; amountOut: bigint } | null> {
+		const quotePromises = paths.map(async (path) => {
+			try {
+				const amounts: bigint[] = await this.router.getAmountsOut(
+					amountInWei,
+					path,
+				)
+				return amounts[amounts.length - 1]
+			} catch {
+				return null
+			}
+		})
+
+		const results = await Promise.all(quotePromises)
+		const validAmounts = results.filter(
+			(amount): amount is bigint => amount !== null,
+		)
+
+		if (validAmounts.length === 0) return null
+
+		// Select the path with the highest output
+		const bestAmountOut = validAmounts.reduce((best, current) =>
+			current > best ? current : best,
+		)
+
+		const amountOutFormatted = ethers.formatUnits(bestAmountOut, outputDecimals)
+		return { amountOutFormatted, amountOut: bestAmountOut }
+	}
+
+	private generatePaths(
+		inputAddress: string,
+		outputAddress: string,
+	): string[][] {
+		const paths: string[][] = []
+
+		// Direct path (always try first)
+		paths.push([inputAddress, outputAddress])
+
+		// Multi-hop paths through intermediate tokens
+		// Try routing through WNEON if not already in path
+		if (
+			inputAddress.toLowerCase() !== config.wrappedNative.toLowerCase() &&
+			outputAddress.toLowerCase() !== config.wrappedNative.toLowerCase()
+		) {
+			paths.push([inputAddress, config.wrappedNative, outputAddress])
+		}
+
+		// Try routing through other tokens if available
+		for (const token of neonTokens) {
+			if (token.name === "NEON") continue // Skip native, use wrapped instead
+			const intermediateAddr = token.contractAddress.toLowerCase()
+			if (
+				inputAddress.toLowerCase() !== intermediateAddr &&
+				outputAddress.toLowerCase() !== intermediateAddr
+			) {
+				paths.push([inputAddress, intermediateAddr, outputAddress])
+			}
+		}
+
+		return paths
+	}
+
 	async getQuote(params: {
 		inputSymbol: SelectTokensState
 		outputSymbol: SelectTokensState
@@ -78,20 +144,52 @@ export class SwapService {
 
 			const amountInWei = ethers.parseUnits(amountIn, input.decimals)
 
-			const path: string[] = [input.address, output.address]
-
-			const amounts: bigint[] = await this.router.getAmountsOut(
+			// Generate all possible paths and find the best quote
+			const paths = this.generatePaths(input.address, output.address)
+			const quote = await this.getBestQuoteForPaths(
 				amountInWei,
-				path,
+				paths,
+				output.decimals,
 			)
-			const amountOut = amounts[amounts.length - 1]
-			const amountOutFormatted = ethers.formatUnits(amountOut, output.decimals)
 
-			return { amountOutFormatted, amountOut }
+			return quote
 		} catch (error) {
 			console.error("Quote error:", error)
 			return null
 		}
+	}
+
+	private async getBestReverseQuoteForPaths(
+		amountOutWei: bigint,
+		paths: string[][],
+		inputDecimals: number,
+	): Promise<{ amountInFormatted: string; amountIn: bigint } | null> {
+		const quotePromises = paths.map(async (path) => {
+			try {
+				const amounts: bigint[] = await this.router.getAmountsIn(
+					amountOutWei,
+					path,
+				)
+				return amounts[0]
+			} catch {
+				return null
+			}
+		})
+
+		const results = await Promise.all(quotePromises)
+		const validAmounts = results.filter(
+			(amount): amount is bigint => amount !== null,
+		)
+
+		if (validAmounts.length === 0) return null
+
+		// Select the path with the lowest input (best price)
+		const bestAmountIn = validAmounts.reduce((best, current) =>
+			current < best ? current : best,
+		)
+
+		const amountInFormatted = ethers.formatUnits(bestAmountIn, inputDecimals)
+		return { amountInFormatted, amountIn: bestAmountIn }
 	}
 
 	async getQuoteForOutput(params: {
@@ -111,16 +209,15 @@ export class SwapService {
 
 			const amountOutWei = ethers.parseUnits(amountOut, output.decimals)
 
-			const path: string[] = [input.address, output.address]
-
-			const amounts: bigint[] = await this.router.getAmountsIn(
+			// Generate all possible paths and find the best quote
+			const paths = this.generatePaths(input.address, output.address)
+			const quote = await this.getBestReverseQuoteForPaths(
 				amountOutWei,
-				path,
+				paths,
+				input.decimals,
 			)
-			const amountIn = amounts[0]
-			const amountInFormatted = ethers.formatUnits(amountIn, input.decimals)
 
-			return { amountInFormatted, amountIn }
+			return quote
 		} catch (error) {
 			console.error("Reverse quote error:", error)
 			return null
@@ -141,15 +238,36 @@ export class SwapService {
 			throw new Error("Invalid amount")
 		}
 
-		// Resolve tokens and compute minOut based on current quote
+		// Resolve tokens and compute minOut based on current quote using best path
 		const [input, output] = await Promise.all([
 			this.resolveToken(inputSymbol),
 			this.resolveToken(outputSymbol),
 		])
-		const path: string[] = [input.address, output.address]
 		const amountIn = ethers.parseUnits(amountInFormatted, input.decimals)
-		const amountsOut: bigint[] = await this.router.getAmountsOut(amountIn, path)
-		const quotedOut: bigint = amountsOut[amountsOut.length - 1]
+
+		// Find the best path and quote
+		const paths = this.generatePaths(input.address, output.address)
+		let bestPath: string[] | null = null
+		let quotedOut: bigint | null = null
+
+		for (const path of paths) {
+			try {
+				const amountsOut: bigint[] = await this.router.getAmountsOut(
+					amountIn,
+					path,
+				)
+				const amountOut = amountsOut[amountsOut.length - 1]
+				if (quotedOut === null || amountOut > quotedOut) {
+					quotedOut = amountOut
+					bestPath = path
+				}
+			} catch {}
+		}
+
+		if (!bestPath || quotedOut === null) {
+			throw new Error("No valid swap path found")
+		}
+
 		const amountOutMin =
 			(quotedOut * BigInt(10_000 - slippageBps)) / BigInt(10_000)
 		const deadline = Math.floor(Date.now() / 1000) + 60 * 20
@@ -195,7 +313,7 @@ export class SwapService {
 			// Native -> Token
 			tx = await routerWithSigner.swapExactETHForTokens(
 				amountOutMin,
-				path,
+				bestPath,
 				recipient,
 				deadline,
 				{ value: amountIn },
@@ -205,7 +323,7 @@ export class SwapService {
 			tx = await routerWithSigner.swapExactTokensForETH(
 				amountIn,
 				amountOutMin,
-				path,
+				bestPath,
 				recipient,
 				deadline,
 			)
@@ -214,7 +332,7 @@ export class SwapService {
 			tx = await routerWithSigner.swapExactTokensForTokens(
 				amountIn,
 				amountOutMin,
-				path,
+				bestPath,
 				recipient,
 				deadline,
 			)
