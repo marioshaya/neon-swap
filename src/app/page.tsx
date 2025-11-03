@@ -4,8 +4,10 @@ import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { CgArrowsExchangeAltV } from "react-icons/cg"
 import ConnectWallet from "@/components/ConnectWallet"
+import RpcSelector from "@/components/RpcSelector"
 import TokenField from "@/components/TokenField"
 import TokenSelector from "@/components/TokenSelector"
+import { useRpc } from "@/context/RpcContext"
 import { SwapService } from "@/services/swap-service"
 import type { SelectTokensState, TxState } from "@/types"
 
@@ -31,7 +33,8 @@ export default function Home() {
 	// Amounts
 	const [inputAmount, setInputAmount] = useState<string>("")
 	const [outputAmount, setOutputAmount] = useState<string>("")
-	const swapService = useMemo(() => new SwapService(), [])
+	const { rpcUrl } = useRpc()
+	const swapService = useMemo(() => new SwapService(rpcUrl), [rpcUrl])
 
 	const openStatus = (s: typeof status, msg?: string, hash?: string | null) => {
 		setStatus(s)
@@ -190,10 +193,13 @@ export default function Home() {
 			<div className="mx-auto max-w-[90%] space-y-4 lg:max-w-7xl">
 				<div className="flex items-center justify-between">
 					<div className="font-semibold text-cyan-600 text-2xl">Neon Swap</div>
-					<ConnectWallet
-						connectedAccount={connectedAccount}
-						onClick={handleWalletConnect}
-					/>
+					<div className="flex items-center gap-x-4">
+						<RpcSelector />
+						<ConnectWallet
+							connectedAccount={connectedAccount}
+							onClick={handleWalletConnect}
+						/>
+					</div>
 				</div>
 				<div className="w-full flex items-center justify-center flex-col bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4">
 					<TokenField

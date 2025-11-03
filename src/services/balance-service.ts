@@ -12,8 +12,8 @@ const ERC20_ABI = [
 export class BalanceService {
 	private provider: ethers.JsonRpcProvider
 
-	constructor() {
-		this.provider = new ethers.JsonRpcProvider(config.rpc)
+	constructor(rpcUrl: string) {
+		this.provider = new ethers.JsonRpcProvider(rpcUrl)
 	}
 
 	async getNeonBalance(walletAddress: string): Promise<NeonBalanceResponse> {

@@ -1,4 +1,6 @@
+import { cookies } from "next/headers"
 import { type NextRequest, NextResponse } from "next/server"
+import { config } from "@/config"
 import { BalanceService } from "@/services/balance-service"
 
 export async function GET(req: NextRequest) {
@@ -21,7 +23,13 @@ export async function GET(req: NextRequest) {
 	}
 
 	try {
-		const balanceService = new BalanceService()
+		const rpcCookie = cookies().get("rpc_index")?.value
+		const idx = Number(rpcCookie)
+		const rpcUrl =
+			!Number.isNaN(idx) && idx >= 0 && idx < config.rpc.length
+				? config.rpc[idx]
+				: config.rpc[0]
+		const balanceService = new BalanceService(rpcUrl)
 		const result = await balanceService.getUsdcBalance(walletAddress)
 
 		return NextResponse.json(result, { status: 200 })

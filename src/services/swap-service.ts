@@ -14,8 +14,8 @@ export class SwapService {
 	private router: ethers.Contract
 	private decimalsCache: Map<string, number> = new Map()
 
-	constructor() {
-		this.provider = new ethers.JsonRpcProvider(config.rpc)
+	constructor(rpcUrl: string) {
+		this.provider = new ethers.JsonRpcProvider(rpcUrl)
 		this.router = new ethers.Contract(
 			config.icecreamSwapV2Router,
 			V2_ROUTER_ABI,
