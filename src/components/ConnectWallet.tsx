@@ -21,7 +21,7 @@ const ConnectWallet = ({ connectedAccount, onClick }: ConnectWalletProps) => {
 				className={`flex items-center justify-center gap-x-2 font-bold border w-full p-2 rounded-lg transition-colors ${
 					connectedAccount
 						? "text-white bg-cyan-600 border-cyan-600 hover:bg-cyan-500 ease-in-out duration-300 transition-all"
-						: "text-white bg-white border-cyan-600 hover:bg-cyan-700"
+						: "text-cyan-600 bg-white border-cyan-600 hover:bg-cyan-700"
 				}`}
 				type="button"
 				onClick={() => setIsDropdown(!isDropdown)}
