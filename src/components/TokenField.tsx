@@ -23,7 +23,9 @@ const TokenField = ({ amount, isOutput, onChange, onClick, token }: props) => {
 	}
 
 	return (
-		<div className="w-full bg-gray-200/75 flex flex-col items-center gap-4 border-2 border-cyan-600 p-4 rounded-lg dark:bg-gray-200/15">
+		<div
+			className={`w-full flex flex-col items-center gap-4 border-2 border-cyan-600 p-4 rounded-lg ${isOutput ? "bg-gray-700/25 dark:bg-gray-200/5" : "bg-gray-200/75 dark:bg-gray-200/15"}`}
+		>
 			<div className="w-full flex justify-between items-center">
 				<button
 					className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-600 text-white/95 font-bold gap-x-1"
@@ -38,7 +40,7 @@ const TokenField = ({ amount, isOutput, onChange, onClick, token }: props) => {
 				<div className="">32</div>
 			</div>
 			<input
-				className="w-full text-end py-1 font-bold text-xl"
+				className={`w-full text-end py-1 font-bold text-xl ${isOutput ? "text-cyan-600" : "text-cyan-500"}`}
 				type="text"
 				inputMode="decimal"
 				pattern="^\\d*\\.?\\d*$"
