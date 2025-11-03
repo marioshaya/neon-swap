@@ -5,4 +5,5 @@ export const config = {
 	name: "Neon EVM Mainnet",
 	rpc: "https://neon-mainnet.everstake.one",
 	scanExplorer: "https://neon.blockscout.com/tx/",
+	icecreamSwapV2Router: "0xBb5e1777A331ED93E07cF043363e48d320eb96c4",
 }
