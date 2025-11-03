@@ -12,8 +12,15 @@ export const useBalance = (addr: string) => {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Only once
 	useEffect(() => {
+		// Guard: no address => reset and skip fetching
+		if (!addr || addr.trim() === "") {
+			setBalance({ neon: 0, usdc: 0, usdt: 0 })
+			setLoading(false)
+			setError(null)
+			return
+		}
+
 		const fetchBalances = async () => {
 			setLoading(true)
 			setError(null)
@@ -51,7 +58,7 @@ export const useBalance = (addr: string) => {
 		fetchBalances()
 		const interval = setInterval(fetchBalances, 30_000)
 		return () => clearInterval(interval)
-	}, [])
+	}, [addr])
 
 	return { balance, loading, error }
 }
