@@ -459,16 +459,19 @@ export default function Home() {
 						</button>
 					)}
 				</div>
-				{statusOpen && (
-					<div className="">
-						{statusMessage && <div>{statusMessage}</div>}
-						<Link
-							href={`https://neon.blockscout.com/tx/${txHash}?tab=token_transfers`}
-						>
-							{txHash}
-						</Link>
-					</div>
-				)}
+				<div className="">
+					{statusOpen && (
+						<div className="">
+							{statusMessage && <div>{statusMessage}</div>}
+							<Link
+								href={`${config.scanExplorer}/${txHash}?tab=token_transfers`}
+								target="_blank"
+							>
+								{txHash}
+							</Link>
+						</div>
+					)}
+				</div>
 				{isInputTokenSelectorOpen && connectedAccount && (
 					<TokenSelector
 						connectedWallet={connectedAccount}
