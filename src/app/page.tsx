@@ -370,6 +370,17 @@ export default function Home() {
 		lastEdited,
 	])
 
+	// Auto close message status after 15s
+	useEffect(() => {
+		if (!statusOpen) return
+
+		const interval = setInterval(() => {
+			setStatusOpen(false)
+		}, 15_000)
+
+		return () => clearInterval(interval)
+	}, [statusOpen])
+
 	return (
 		<main className="bg-gray-200 dark:bg-gray-800 px-4 py-4 min-h-screen">
 			<div className="mx-auto max-w-[90%] space-y-4 lg:max-w-7xl">
