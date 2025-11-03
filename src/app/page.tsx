@@ -8,6 +8,7 @@ import RpcSelector from "@/components/RpcSelector"
 import TokenField from "@/components/TokenField"
 import TokenSelector from "@/components/TokenSelector"
 import { useRpc } from "@/context/RpcContext"
+import { useBalance } from "@/hooks"
 import { SwapService } from "@/services/swap-service"
 import type { SelectTokensState, TxState } from "@/types"
 
@@ -34,8 +35,27 @@ export default function Home() {
 	const [inputAmount, setInputAmount] = useState<string>("")
 	const [outputAmount, setOutputAmount] = useState<string>("")
 	const [lastEdited, setLastEdited] = useState<"input" | "output" | null>(null)
+
+	// Balance
+	const { balance } = useBalance(connectedAccount ?? "")
+
+	// Rpc
 	const { rpcUrl } = useRpc()
 	const swapService = useMemo(() => new SwapService(rpcUrl), [rpcUrl])
+
+	const getTokenBalance = (tkn: SelectTokensState) => {
+		switch (tkn) {
+			case "NEON":
+				return balance.neon
+			case "USDC":
+				return balance.usdc
+			case "USDTi":
+				return balance.usdt
+		}
+	}
+
+	const isBalanceSufficient =
+		getTokenBalance(selectedInputToken) > Number(inputAmount)
 
 	const openStatus = (s: typeof status, msg?: string, hash?: string | null) => {
 		setStatus(s)
@@ -273,7 +293,9 @@ export default function Home() {
 							!selectedInputToken ||
 							!selectedOutputToken ||
 							!inputAmount ||
-							!outputAmount
+							!outputAmount ||
+							!isBalanceSufficient
+							// getTokenBalance(selectedInputToken) < Number(inputAmount)
 						}
 						type="button"
 					>
