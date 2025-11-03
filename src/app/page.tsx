@@ -433,21 +433,31 @@ export default function Home() {
 						isOutput
 						token={selectedOutputToken}
 					/>
-					<button
-						className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
-						disabled={
-							!connectedAccount ||
-							!selectedInputToken ||
-							!selectedOutputToken ||
-							!inputAmount ||
-							!outputAmount ||
-							!isBalanceSufficient
-						}
-						type="button"
-						onClick={handleSwap}
-					>
-						{isBalanceSufficient ? "Swap" : "Insufficient balance"}
-					</button>
+					{connectedAccount ? (
+						<button
+							className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
+							disabled={
+								!connectedAccount ||
+								!selectedInputToken ||
+								!selectedOutputToken ||
+								!inputAmount ||
+								!outputAmount ||
+								!isBalanceSufficient
+							}
+							type="button"
+							onClick={handleSwap}
+						>
+							{isBalanceSufficient ? "Swap" : "Insufficient balance"}
+						</button>
+					) : (
+						<button
+							className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
+							onClick={handleWalletConnect}
+							type="button"
+						>
+							Connect Wallet
+						</button>
+					)}
 				</div>
 				{statusOpen && (
 					<div className="">
