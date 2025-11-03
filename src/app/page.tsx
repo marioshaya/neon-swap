@@ -203,24 +203,6 @@ export default function Home() {
 						onClick={handleInputTokenSelectorModal}
 						token={selectedInputToken}
 					/>
-					{/* <div className="w-full flex items-center gap-x-4">
-						<input
-							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1 dark:bg-gray-200/15"
-							type="number"
-							value={inputAmount}
-							onChange={(e) => setInputAmount(e.target.value)}
-						/>
-						<button
-							className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-600 text-white/95 font-bold gap-x-1"
-							onClick={handleInputTokenSelectorModal}
-							type="button"
-						>
-							<div>{selectedInputToken}</div>
-							<div className="w-full h-full ">
-								<FaAngleDown className="text-xl" />
-							</div>
-						</button>
-					</div> */}
 					<div className="w-full flex justify-center py-2">
 						<button
 							type="button"
@@ -237,24 +219,6 @@ export default function Home() {
 						isOutput
 						token={selectedOutputToken}
 					/>
-					{/* <div className="w-full flex items-center gap-x-4">
-						<input
-							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1 dark:bg-gray-200/15"
-							type="number"
-							value={outputAmount}
-							readOnly
-						/>
-						<button
-							className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-700 text-white/95 font-bold gap-x-1"
-							onClick={handleOutputTokenSelectorModal}
-							type="button"
-						>
-							<div>{selectedOutputToken}</div>
-							<div className="w-full h-full ">
-								<FaAngleDown className="text-xl" />
-							</div>
-						</button>
-					</div> */}
 					<button
 						className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
 						disabled={!connectedAccount}
