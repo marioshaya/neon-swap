@@ -1,14 +1,27 @@
-import { FaAngleDown } from "react-icons/fa6"
+import { FaAngleDown, FaCircleNotch } from "react-icons/fa6"
+import { MdNearbyError } from "react-icons/md"
+import { useBalance } from "@/hooks"
+import { formatBalance } from "@/utils"
 
 interface props {
 	amount: string
+	connectedAccount: string | null
 	token: string
 	onChange?: React.ChangeEventHandler<HTMLInputElement>
 	onClick: () => void
 	isOutput?: boolean
 }
 
-const TokenField = ({ amount, isOutput, onChange, onClick, token }: props) => {
+const TokenField = ({
+	amount,
+	connectedAccount,
+	isOutput,
+	onChange,
+	onClick,
+	token,
+}: props) => {
+	const { balance, loading, error } = useBalance(connectedAccount ?? "")
+
 	const handleInput: React.FormEventHandler<HTMLInputElement> = (e) => {
 		if (isOutput) return
 		const inputEl = e.currentTarget
@@ -37,7 +50,23 @@ const TokenField = ({ amount, isOutput, onChange, onClick, token }: props) => {
 						<FaAngleDown className="text-xl" />
 					</div>
 				</button>
-				<div className="">32</div>
+				{connectedAccount && (
+					<div className="flex flex-end">
+						{loading && (
+							<FaCircleNotch className="animate-spin text-cyan-400/75" />
+						)}
+						{!loading && !error && balance && (
+							<span>
+								{token === "NEON"
+									? formatBalance(balance.neon)
+									: token === "USDC"
+										? formatBalance(balance.usdc)
+										: formatBalance(balance.usdt)}
+							</span>
+						)}
+						{error && <MdNearbyError />}
+					</div>
+				)}
 			</div>
 			<input
 				className={`w-full text-end py-1 font-bold text-xl ${isOutput ? "text-cyan-600" : "text-cyan-500"}`}

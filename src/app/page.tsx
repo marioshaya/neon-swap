@@ -198,6 +198,7 @@ export default function Home() {
 				<div className="w-full flex items-center justify-center flex-col bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4">
 					<TokenField
 						amount={inputAmount}
+						connectedAccount={connectedAccount}
 						onChange={(e) => setInputAmount(e.target.value)}
 						onClick={handleInputTokenSelectorModal}
 						token={selectedInputToken}
@@ -231,6 +232,7 @@ export default function Home() {
 					</div>
 					<TokenField
 						amount={outputAmount}
+						connectedAccount={connectedAccount}
 						onClick={handleOutputTokenSelectorModal}
 						isOutput
 						token={selectedOutputToken}
