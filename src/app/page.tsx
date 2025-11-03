@@ -3,8 +3,8 @@
 import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { CgArrowsExchangeAltV } from "react-icons/cg"
-import { FaAngleDown } from "react-icons/fa6"
 import ConnectWallet from "@/components/ConnectWallet"
+import TokenField from "@/components/TokenField"
 import TokenSelector from "@/components/TokenSelector"
 import { SwapService } from "@/services/swap-service"
 import type { SelectTokensState, TxState } from "@/types"
@@ -196,7 +196,13 @@ export default function Home() {
 					/>
 				</div>
 				<div className="w-full flex items-center justify-center flex-col bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4">
-					<div className="w-full flex items-center gap-x-4">
+					<TokenField
+						amount={inputAmount}
+						onChange={(e) => setInputAmount(e.target.value)}
+						onClick={handleInputTokenSelectorModal}
+						token={selectedInputToken}
+					/>
+					{/* <div className="w-full flex items-center gap-x-4">
 						<input
 							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1 dark:bg-gray-200/15"
 							type="number"
@@ -213,7 +219,7 @@ export default function Home() {
 								<FaAngleDown className="text-xl" />
 							</div>
 						</button>
-					</div>
+					</div> */}
 					<div className="w-full flex justify-center py-2">
 						<button
 							type="button"
@@ -223,7 +229,13 @@ export default function Home() {
 							<CgArrowsExchangeAltV />
 						</button>
 					</div>
-					<div className="w-full flex items-center gap-x-4">
+					<TokenField
+						amount={outputAmount}
+						onClick={handleOutputTokenSelectorModal}
+						isOutput
+						token={selectedOutputToken}
+					/>
+					{/* <div className="w-full flex items-center gap-x-4">
 						<input
 							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1 dark:bg-gray-200/15"
 							type="number"
@@ -240,7 +252,7 @@ export default function Home() {
 								<FaAngleDown className="text-xl" />
 							</div>
 						</button>
-					</div>
+					</div> */}
 					<button
 						className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
 						disabled={!connectedAccount}
