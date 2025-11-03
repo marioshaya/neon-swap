@@ -10,6 +10,7 @@ interface props {
 	onChange?: React.ChangeEventHandler<HTMLInputElement>
 	onClick: () => void
 	isOutput?: boolean
+	loading?: boolean
 }
 
 const TokenField = ({
@@ -19,8 +20,14 @@ const TokenField = ({
 	onChange,
 	onClick,
 	token,
+	loading: externalLoading,
 }: props) => {
-	const { balance, loading, error } = useBalance(connectedAccount ?? "")
+	const {
+		balance,
+		loading: internalLoading,
+		error,
+	} = useBalance(connectedAccount ?? "")
+	const loading = externalLoading ?? internalLoading
 
 	const handleInput: React.FormEventHandler<HTMLInputElement> = (e) => {
 		const inputEl = e.currentTarget

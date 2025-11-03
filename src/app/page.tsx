@@ -3,6 +3,8 @@
 import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { CgArrowsExchangeAltV } from "react-icons/cg"
+import { FaCircleNotch } from "react-icons/fa6"
+import { IoReloadOutline } from "react-icons/io5"
 import ConnectWallet from "@/components/ConnectWallet"
 import RpcSelector from "@/components/RpcSelector"
 import TokenField from "@/components/TokenField"
@@ -38,7 +40,17 @@ export default function Home() {
 	const [lastEdited, setLastEdited] = useState<"input" | "output" | null>(null)
 
 	// Balance
-	const { balance } = useBalance(connectedAccount ?? "")
+	const { balance, loading, refetchBalance } = useBalance(
+		connectedAccount ?? "",
+	)
+
+	const handleRefetchBalance = useCallback(() => {
+		if (refetchBalance) {
+			refetchBalance().catch((err) => {
+				console.error("Error refetching balance:", err)
+			})
+		}
+	}, [refetchBalance])
 
 	// Rpc
 	const { rpcUrl } = useRpc()
@@ -317,10 +329,29 @@ export default function Home() {
 						/>
 					</div>
 				</div>
-				<div className="w-full flex items-center justify-center flex-col bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4">
+				<div className="w-full flex items-end justify-center flex-col bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4">
+					<div className="">
+						<button
+							className="text-cyan-600 text-2xl hover:text-cyan-700 cursor-pointer active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+							onClick={(e) => {
+								e.preventDefault()
+								e.stopPropagation()
+								handleRefetchBalance()
+							}}
+							type="button"
+							disabled={!connectedAccount || loading}
+						>
+							{loading ? (
+								<FaCircleNotch className="animate-spin" />
+							) : (
+								<IoReloadOutline />
+							)}
+						</button>
+					</div>
 					<TokenField
 						amount={inputAmount}
 						connectedAccount={connectedAccount}
+						loading={loading}
 						onChange={(e) => {
 							setLastEdited("input")
 							setInputAmount(e.target.value)
@@ -340,6 +371,7 @@ export default function Home() {
 					<TokenField
 						amount={outputAmount}
 						connectedAccount={connectedAccount}
+						loading={loading}
 						onChange={(e) => {
 							setLastEdited("output")
 							setOutputAmount(e.target.value)
