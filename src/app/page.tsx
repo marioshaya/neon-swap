@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { CgArrowsExchangeAltV } from "react-icons/cg"
 import { FaAngleDown } from "react-icons/fa6"
 import ConnectWallet from "@/components/ConnectWallet"
 import TokenSelector from "@/components/TokenSelector"
+import { SwapService } from "@/services/swap-service"
 import type { SelectTokensState, TxState } from "@/types"
 
 export default function Home() {
@@ -26,6 +27,11 @@ export default function Home() {
 		useState<SelectTokensState>("NEON")
 	const [selectedOutputToken, setSelectedOutputToken] =
 		useState<SelectTokensState>("USDC")
+
+	// Amounts
+	const [inputAmount, setInputAmount] = useState<string>("")
+	const [outputAmount, setOutputAmount] = useState<string>("")
+	const swapService = useMemo(() => new SwapService(), [])
 
 	const openStatus = (s: typeof status, msg?: string, hash?: string | null) => {
 		setStatus(s)
@@ -144,6 +150,27 @@ export default function Home() {
 		setSelectedOutputToken(token)
 	}
 
+	useEffect(() => {
+		let cancelled = false
+		async function fetchQuote() {
+			const quote = await swapService.getQuote({
+				inputSymbol: selectedInputToken,
+				outputSymbol: selectedOutputToken,
+				amountIn: inputAmount || "0",
+			})
+			if (cancelled) return
+			setOutputAmount(quote?.amountOutFormatted ?? "")
+		}
+		if (inputAmount && Number(inputAmount) > 0) {
+			fetchQuote().catch(() => {})
+		} else {
+			setOutputAmount("")
+		}
+		return () => {
+			cancelled = true
+		}
+	}, [inputAmount, selectedInputToken, selectedOutputToken, swapService])
+
 	return (
 		<main className="bg-gray-200 dark:bg-gray-800 px-4 py-4 min-h-screen">
 			<div className="mx-auto max-w-[90%] space-y-4 lg:max-w-7xl">
@@ -159,6 +186,8 @@ export default function Home() {
 						<input
 							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1 dark:bg-gray-200/15"
 							type="number"
+							value={inputAmount}
+							onChange={(e) => setInputAmount(e.target.value)}
 						/>
 						<button
 							className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-600 text-white/95 font-bold gap-x-1"
@@ -180,6 +209,8 @@ export default function Home() {
 						<input
 							className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1 dark:bg-gray-200/15"
 							type="number"
+							value={outputAmount}
+							readOnly
 						/>
 						<button
 							className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-700 text-white/95 font-bold gap-x-1"
