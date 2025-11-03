@@ -9,26 +9,44 @@ interface props {
 }
 
 const TokenField = ({ amount, isOutput, onChange, onClick, token }: props) => {
+	const handleInput: React.FormEventHandler<HTMLInputElement> = (e) => {
+		if (isOutput) return
+		const inputEl = e.currentTarget
+		const raw = inputEl.value
+		// Allow only digits and a single optional dot
+		const sanitized = raw.replace(/[^\d.]/g, "").replace(/(\..*)\./g, "$1")
+		if (sanitized !== raw) {
+			inputEl.value = sanitized
+		}
+		// Forward as change event with sanitized value
+		onChange?.(e as unknown as React.ChangeEvent<HTMLInputElement>)
+	}
+
 	return (
-		<div className="w-full flex items-center gap-x-4">
+		<div className="w-full bg-gray-200/75 flex flex-col items-center gap-4 border-2 border-cyan-600 p-4 rounded-lg dark:bg-gray-200/15">
+			<div className="w-full flex justify-between items-center">
+				<button
+					className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-600 text-white/95 font-bold gap-x-1"
+					onClick={onClick}
+					type="button"
+				>
+					<div>{token}</div>
+					<div className="w-full h-full ">
+						<FaAngleDown className="text-xl" />
+					</div>
+				</button>
+				<div className="">32</div>
+			</div>
 			<input
-				className="w-full outline-2 outline-cyan-600 bg-gray-200/75 rounded-lg px-2 py-1 dark:bg-gray-200/15"
-				type="number"
+				className="w-full text-end py-1 font-bold text-xl"
+				type="text"
+				inputMode="decimal"
+				pattern="^\\d*\\.?\\d*$"
 				value={amount}
-				// onChange={(e) => setInputAmount(e.target.value)}
-				onChange={onChange}
+				onInput={handleInput}
+				placeholder="0.00"
 				readOnly={isOutput}
 			/>
-			<button
-				className="flex px-2 py-1 rounded-lg items-center bg-cyan-700 border border-cyan-600 text-white/95 font-bold gap-x-1"
-				onClick={onClick}
-				type="button"
-			>
-				<div>{token}</div>
-				<div className="w-full h-full ">
-					<FaAngleDown className="text-xl" />
-				</div>
-			</button>
 		</div>
 	)
 }
