@@ -7,6 +7,7 @@ import ConnectWallet from "@/components/ConnectWallet"
 import RpcSelector from "@/components/RpcSelector"
 import TokenField from "@/components/TokenField"
 import TokenSelector from "@/components/TokenSelector"
+import { config } from "@/config"
 import { useRpc } from "@/context/RpcContext"
 import { useBalance } from "@/hooks"
 import { SwapService } from "@/services/swap-service"
@@ -57,12 +58,73 @@ export default function Home() {
 	const isBalanceSufficient =
 		getTokenBalance(selectedInputToken) > Number(inputAmount)
 
-	const openStatus = (s: typeof status, msg?: string, hash?: string | null) => {
-		setStatus(s)
-		setStatusMessage(msg)
-		if (typeof hash !== "undefined") setTxHash(hash)
-		setStatusOpen(true)
-	}
+	const openStatus = useCallback(
+		(s: typeof status, msg?: string, hash?: string | null) => {
+			setStatus(s)
+			setStatusMessage(msg)
+			if (typeof hash !== "undefined") setTxHash(hash)
+			setStatusOpen(true)
+		},
+		[],
+	)
+
+	const handleSwap = useCallback(async () => {
+		try {
+			if (!connectedAccount) return
+			if (typeof window === "undefined" || !window.ethereum) {
+				openStatus(
+					"install_required",
+					"MetaMask is not installed. Please install MetaMask to continue.",
+				)
+				return
+			}
+
+			openStatus("pending", "Submitting swap transaction…")
+
+			const browserProvider = new (
+				await import("ethers")
+			).ethers.BrowserProvider(window.ethereum)
+			const network = await browserProvider.getNetwork()
+			if (Number(network.chainId) !== config.chainId) {
+				openStatus(
+					"wrong_network",
+					`Please switch network to ${config.name} (chainId ${config.chainId}).`,
+				)
+				return
+			}
+
+			const { txHash } = await swapService.swapExactInput({
+				inputSymbol: selectedInputToken,
+				outputSymbol: selectedOutputToken,
+				amountInFormatted: inputAmount,
+				recipient: connectedAccount,
+				slippageBps: 50,
+			})
+
+			openStatus("success", "Swap transaction submitted successfully", txHash)
+		} catch (err: unknown) {
+			console.error("Swap error:", err)
+			const message =
+				err instanceof Error
+					? err.message
+					: typeof err === "object" && err !== null && "message" in err
+						? String((err as { message: unknown }).message)
+						: "Error occurred while swapping"
+			const maybeCode = err as { code?: number }
+			if (maybeCode?.code === 4001) {
+				openStatus("cancelled", "You rejected the transaction.")
+			} else {
+				openStatus("error", message)
+			}
+		}
+	}, [
+		connectedAccount,
+		inputAmount,
+		selectedInputToken,
+		selectedOutputToken,
+		swapService,
+		openStatus,
+	])
 
 	const checkConnection = useCallback(async () => {
 		if (typeof window === "undefined" || !window.ethereum) return
@@ -297,6 +359,7 @@ export default function Home() {
 							!isBalanceSufficient
 						}
 						type="button"
+						onClick={handleSwap}
 					>
 						{isBalanceSufficient ? "Swap" : "Insufficient balance"}
 					</button>

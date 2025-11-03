@@ -6,9 +6,19 @@ import type { SelectTokensState } from "@/types"
 const V2_ROUTER_ABI = [
 	"function getAmountsOut(uint256 amountIn, address[] calldata path) external view returns (uint256[] memory amounts)",
 	"function getAmountsIn(uint256 amountOut, address[] calldata path) external view returns (uint256[] memory amounts)",
+	// swap functions
+	"function swapExactETHForTokens(uint256 amountOutMin, address[] calldata path, address to, uint256 deadline) external payable returns (uint256[] memory amounts)",
+	"function swapExactTokensForTokens(uint256 amountIn, uint256 amountOutMin, address[] calldata path, address to, uint256 deadline) external returns (uint256[] memory amounts)",
+	"function swapExactTokensForETH(uint256 amountIn, uint256 amountOutMin, address[] calldata path, address to, uint256 deadline) external returns (uint256[] memory amounts)",
 ]
 
-const ERC20_READ_ABI = ["function decimals() view returns (uint8)"]
+const ERC20_READ_ABI = [
+	"function decimals() view returns (uint8)",
+	"function allowance(address owner, address spender) view returns (uint256)",
+]
+const ERC20_WRITE_ABI = [
+	"function approve(address spender, uint256 amount) returns (bool)",
+]
 
 export class SwapService {
 	private provider: ethers.JsonRpcProvider
@@ -115,5 +125,101 @@ export class SwapService {
 			console.error("Reverse quote error:", error)
 			return null
 		}
+	}
+
+	async swapExactInput(params: {
+		inputSymbol: SelectTokensState
+		outputSymbol: SelectTokensState
+		amountInFormatted: string
+		recipient: string
+		slippageBps?: number // defaults to 50 (0.5%)
+	}): Promise<{ txHash: string }> {
+		const { inputSymbol, outputSymbol, amountInFormatted, recipient } = params
+		const slippageBps = params.slippageBps ?? 50
+
+		if (!amountInFormatted || Number(amountInFormatted) <= 0) {
+			throw new Error("Invalid amount")
+		}
+
+		// Resolve tokens and compute minOut based on current quote
+		const [input, output] = await Promise.all([
+			this.resolveToken(inputSymbol),
+			this.resolveToken(outputSymbol),
+		])
+		const path: string[] = [input.address, output.address]
+		const amountIn = ethers.parseUnits(amountInFormatted, input.decimals)
+		const amountsOut: bigint[] = await this.router.getAmountsOut(amountIn, path)
+		const quotedOut: bigint = amountsOut[amountsOut.length - 1]
+		const amountOutMin =
+			(quotedOut * BigInt(10_000 - slippageBps)) / BigInt(10_000)
+		const deadline = Math.floor(Date.now() / 1000) + 60 * 20
+
+		if (typeof window === "undefined" || !window.ethereum) {
+			throw new Error("Wallet provider not available")
+		}
+
+		const browserProvider = new ethers.BrowserProvider(window.ethereum)
+		const signer = await browserProvider.getSigner()
+		const routerWithSigner = new ethers.Contract(
+			config.icecreamSwapV2Router,
+			V2_ROUTER_ABI,
+			signer,
+		)
+
+		const isInputNative = inputSymbol === "NEON"
+		const isOutputNative = outputSymbol === "NEON"
+
+		// Approve if input is ERC20
+		if (!isInputNative) {
+			const inputErc20 = new ethers.Contract(
+				input.address,
+				[...ERC20_READ_ABI, ...ERC20_WRITE_ABI],
+				signer,
+			)
+			const owner = await signer.getAddress()
+			const currentAllowance: bigint = await inputErc20.allowance(
+				owner,
+				config.icecreamSwapV2Router,
+			)
+			if (currentAllowance < amountIn) {
+				const approveTx = await inputErc20.approve(
+					config.icecreamSwapV2Router,
+					amountIn,
+				)
+				await approveTx.wait()
+			}
+		}
+
+		let tx: ethers.TransactionResponse
+		if (isInputNative) {
+			// Native -> Token
+			tx = await routerWithSigner.swapExactETHForTokens(
+				amountOutMin,
+				path,
+				recipient,
+				deadline,
+				{ value: amountIn },
+			)
+		} else if (isOutputNative) {
+			// Token -> Native
+			tx = await routerWithSigner.swapExactTokensForETH(
+				amountIn,
+				amountOutMin,
+				path,
+				recipient,
+				deadline,
+			)
+		} else {
+			// Token -> Token
+			tx = await routerWithSigner.swapExactTokensForTokens(
+				amountIn,
+				amountOutMin,
+				path,
+				recipient,
+				deadline,
+			)
+		}
+
+		return { txHash: tx.hash }
 	}
 }
