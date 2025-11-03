@@ -299,7 +299,7 @@ export default function Home() {
 						}
 						type="button"
 					>
-						Swap
+						{isBalanceSufficient ? "Swap" : "Insufficient balance"}
 					</button>
 				</div>
 				{statusOpen && (
