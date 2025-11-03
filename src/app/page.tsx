@@ -268,7 +268,13 @@ export default function Home() {
 					/>
 					<button
 						className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
-						disabled={!connectedAccount}
+						disabled={
+							!connectedAccount ||
+							!selectedInputToken ||
+							!selectedOutputToken ||
+							!inputAmount ||
+							!outputAmount
+						}
 						type="button"
 					>
 						Swap
