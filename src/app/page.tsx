@@ -150,6 +150,20 @@ export default function Home() {
 		setSelectedOutputToken(token)
 	}
 
+	const handleSwitchTokens = () => {
+		setSelectedInputToken((prevIn) => {
+			const newIn = selectedOutputToken
+			setSelectedOutputToken(prevIn)
+			return newIn
+		})
+		// Swap amounts so the previous quote becomes the new input
+		setInputAmount((prevInAmt) => {
+			const newInAmt = outputAmount
+			setOutputAmount(prevInAmt)
+			return newInAmt
+		})
+	}
+
 	useEffect(() => {
 		let cancelled = false
 		async function fetchQuote() {
@@ -201,7 +215,11 @@ export default function Home() {
 						</button>
 					</div>
 					<div className="w-full flex justify-center py-2">
-						<button type="button" className="text-cyan-500 text-2xl">
+						<button
+							type="button"
+							className="text-cyan-500 text-2xl"
+							onClick={handleSwitchTokens}
+						>
 							<CgArrowsExchangeAltV />
 						</button>
 					</div>
