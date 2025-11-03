@@ -56,8 +56,8 @@ export const useBalance = (addr: string) => {
 
 	useEffect(() => {
 		refetchBalance()
-		const interval = setInterval(refetchBalance, 30_000)
-		return () => clearInterval(interval)
+		// const interval = setInterval(refetchBalance, 30_000)
+		// return () => clearInterval(interval)
 	}, [refetchBalance])
 
 	return { balance, loading, error, refetchBalance }
