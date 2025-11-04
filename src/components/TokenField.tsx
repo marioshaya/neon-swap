@@ -75,7 +75,7 @@ const TokenField = ({
 				)}
 			</div>
 			<input
-				className={`w-full text-end py-1 font-bold text-2xl rounded-md pr-2 focus:outline-2 outline-cyan-800 ${isOutput ? "text-cyan-600" : "text-cyan-500"}`}
+				className={`w-full text-end py-1 font-bold text-2xl rounded-md pr-2 focus:outline-2 outline-cyan-600 ${isOutput ? "text-cyan-600" : "text-cyan-500"}`}
 				type="text"
 				inputMode="decimal"
 				pattern="^\\d*\\.?\\d*$"
