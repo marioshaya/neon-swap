@@ -18,9 +18,9 @@ const TokenSelector = ({
 
 	return (
 		<div className="absolute top-0 left-0 flex flex-col items-center justify-center p-4 backdrop-blur-lg h-screen w-full bg-cyan-700/5">
-			<div className="bg-cyan-700 w-4/5 rounded-3xl overflow-hidden">
+			<div className="bg-cyan-700 w-4/5 rounded-3xl text-white overflow-hidden">
 				<div className="flex items-center justify-between p-4">
-					<div className="text-lg font-bold">
+					<div className="text-lg font-bold ">
 						{isInput ? "Input" : "Output"} Token Selector
 					</div>
 					<button type="button" onClick={onClose}>
