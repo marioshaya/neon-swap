@@ -136,6 +136,57 @@ export default function Home() {
 		[],
 	)
 
+	const switchToNeon = useCallback(async () => {
+		if (typeof window === "undefined" || !window.ethereum) {
+			openStatus(
+				"install_required",
+				"MetaMask is not installed. Please install MetaMask to continue.",
+			)
+			return
+		}
+
+		try {
+			const chainIdHex = `0x${config.chainId.toString(16)}`
+			await window.ethereum.request({
+				method: "wallet_switchEthereumChain",
+				params: [{ chainId: chainIdHex }],
+			})
+			openStatus("success", `Switched to ${config.name}`)
+		} catch (err: unknown) {
+			const maybe = err as { code?: number }
+			if (maybe?.code === 4902) {
+				try {
+					const chainIdHex = `0x${config.chainId.toString(16)}`
+					await window.ethereum.request({
+						method: "wallet_addEthereumChain",
+						params: [
+							{
+								chainId: chainIdHex,
+								chainName: config.name,
+								nativeCurrency: { name: "Neon", symbol: "NEON", decimals: 18 },
+								rpcUrls: config.rpc,
+								blockExplorerUrls: [config.scanExplorer.replace(/\/tx.*$/, "")],
+							},
+						],
+					})
+					openStatus("success", `Added and switched to ${config.name}`)
+				} catch (addErr: unknown) {
+					console.error("Error adding Neon chain:", addErr)
+					openStatus(
+						"error",
+						addErr instanceof Error ? addErr.message : "Failed to add chain",
+					)
+				}
+				return
+			}
+			console.error("Error switching chain:", err)
+			openStatus(
+				"error",
+				err instanceof Error ? err.message : "Failed to switch network",
+			)
+		}
+	}, [openStatus])
+
 	const handleSwap = useCallback(async () => {
 		try {
 			if (!connectedAccount) return
@@ -239,6 +290,22 @@ export default function Home() {
 
 			setConnectedAccount(accounts[0])
 			openStatus("success", "Wallet connected successfully")
+
+			// Prompt if on wrong network right after connect
+			try {
+				const chainIdHex = (await window.ethereum.request({
+					method: "eth_chainId",
+				})) as string
+				const currentChainId = parseInt(chainIdHex, 16)
+				if (currentChainId !== config.chainId) {
+					openStatus(
+						"wrong_network",
+						`Please switch network to ${config.name} (chainId ${config.chainId}).`,
+					)
+				}
+			} catch {
+				// ignore
+			}
 		} catch (err: unknown) {
 			console.error("Wallet connection error:", err)
 			const message =
@@ -260,6 +327,28 @@ export default function Home() {
 	useEffect(() => {
 		checkConnection()
 	}, [checkConnection])
+
+	// Check network and open a switch prompt if wrong
+	useEffect(() => {
+		const eth = typeof window === "undefined" ? undefined : window.ethereum
+		if (!eth) return
+		;(async () => {
+			try {
+				const chainIdHex = (await eth.request({
+					method: "eth_chainId",
+				})) as string
+				const currentChainId = parseInt(chainIdHex, 16)
+				if (currentChainId !== config.chainId) {
+					openStatus(
+						"wrong_network",
+						`Please switch network to ${config.name} (chainId ${config.chainId}).`,
+					)
+				}
+			} catch {
+				// ignore
+			}
+		})()
+	}, [openStatus])
 
 	// Listen for account changes
 	useEffect(() => {
@@ -480,13 +569,20 @@ export default function Home() {
 				</div>
 				{statusOpen && (
 					<div className="flex justify-between">
-						{statusMessage && <div>{statusMessage}</div>}
-						<Link
-							href={`${config.scanExplorer}/${txHash}?tab=token_transfers`}
-							target="_blank"
-						>
-							{txHash}
-						</Link>
+						<div className="">
+							{statusMessage && <div>{statusMessage}</div>}
+							{isWrongNetwork && (
+								<button onClick={switchToNeon} type="button">
+									Switch to Neon EVM Chain
+								</button>
+							)}
+							<Link
+								href={`${config.scanExplorer}/${txHash}?tab=token_transfers`}
+								target="_blank"
+							>
+								{txHash}
+							</Link>
+						</div>
 						<button onClick={() => setStatusOpen(false)} type="button">
 							<FaTimes />
 						</button>
