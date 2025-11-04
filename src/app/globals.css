@@ -25,6 +25,10 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 }
 
-button {
+button:not(:disabled) {
 	@apply hover:cursor-pointer;
+}
+
+button:disabled {
+	@apply cursor-not-allowed opacity-60;
 }

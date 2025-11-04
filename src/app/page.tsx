@@ -397,7 +397,7 @@ export default function Home() {
 				<div className="w-full flex items-end justify-center flex-col bg-white dark:bg-black/20 border-2 border-cyan-600 rounded-2xl shadow-xl py-4 px-4">
 					<div className="">
 						<button
-							className="text-cyan-600 text-2xl hover:text-cyan-700 cursor-pointer active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+							className="text-cyan-600 text-2xl hover:text-cyan-700 cursor-pointer active:scale-95 transition-transform disabled:opacity-50"
 							onClick={(e) => {
 								e.preventDefault()
 								e.stopPropagation()
@@ -447,7 +447,7 @@ export default function Home() {
 					/>
 					{connectedAccount ? (
 						<button
-							className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
+							className="text-white font-bold bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
 							disabled={
 								!connectedAccount ||
 								!selectedInputToken ||
@@ -463,7 +463,7 @@ export default function Home() {
 						</button>
 					) : (
 						<button
-							className="text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
+							className="text-white font-bold bg-cyan-800 border-2 border-cyan-600 w-full py-2 rounded-lg mt-6"
 							onClick={handleWalletConnect}
 							type="button"
 						>
