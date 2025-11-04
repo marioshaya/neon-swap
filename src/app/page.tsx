@@ -407,6 +407,14 @@ export default function Home() {
 		})
 	}
 
+	const swapButtonText = useMemo(() => {
+		if (isWrongNetwork) return "Wrong network"
+		if (!inputAmount) return "Enter an amount"
+		if (!outputAmount) return "Enter an amount"
+		if (!isBalanceSufficient) return "Insufficient balance"
+		return "Swap"
+	}, [isWrongNetwork, inputAmount, outputAmount, isBalanceSufficient])
+
 	useEffect(() => {
 		let cancelled = false
 		async function fetchQuote() {
@@ -551,11 +559,7 @@ export default function Home() {
 							type="button"
 							onClick={handleSwap}
 						>
-							{isBalanceSufficient && !isWrongNetwork
-								? "Swap"
-								: isWrongNetwork
-									? "Wrong network"
-									: "Insufficient balance"}
+							{swapButtonText}
 						</button>
 					) : (
 						<button
