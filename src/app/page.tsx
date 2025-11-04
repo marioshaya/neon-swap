@@ -553,7 +553,7 @@ export default function Home() {
 						>
 							{isBalanceSufficient && !isWrongNetwork
 								? "Swap"
-								: status === "wrong_network"
+								: isWrongNetwork
 									? "Wrong network"
 									: "Insufficient balance"}
 						</button>
