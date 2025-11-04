@@ -124,6 +124,8 @@ export default function Home() {
 	const isBalanceSufficient =
 		getTokenBalance(selectedInputToken) > Number(inputAmount)
 
+	const isWrongNetwork = status === "wrong_network"
+
 	const openStatus = useCallback(
 		(s: typeof status, msg?: string, hash?: string | null) => {
 			setStatus(s)
@@ -454,12 +456,17 @@ export default function Home() {
 								!selectedOutputToken ||
 								!inputAmount ||
 								!outputAmount ||
-								!isBalanceSufficient
+								!isBalanceSufficient ||
+								isWrongNetwork
 							}
 							type="button"
 							onClick={handleSwap}
 						>
-							{isBalanceSufficient ? "Swap" : "Insufficient balance"}
+							{isBalanceSufficient && !isWrongNetwork
+								? "Swap"
+								: status === "wrong_network"
+									? "Wrong network"
+									: "Insufficient balance"}
 						</button>
 					) : (
 						<button
