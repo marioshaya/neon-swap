@@ -79,7 +79,6 @@ const TokenField = ({
 				type="text"
 				inputMode="decimal"
 				pattern="^\\d*\\.?\\d*$"
-				// value={amount}
 				value={isOutput ? (loading ? "..." : amount) : amount}
 				onInput={handleInput}
 				placeholder="0.00"
