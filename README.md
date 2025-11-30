@@ -1,4 +1,7 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Neon X Swap
+Neon X Swap is a mini DEX application that allow users who have RPC issues to swap tokens on Neon EVM Chain. It allows them to choose which RPC to use.
+
+### Tech stack: Next JS, Tailwind CSS, Typescript, Ethers JS v6
 
 ## Getting Started
 
